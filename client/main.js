@@ -24,7 +24,6 @@ var gameProperties = {
 
 //game state
 var main = function(game){
-
 };
 
 //When connected to the server, log it, create a new object
@@ -38,15 +37,30 @@ function onSocketConnected() {
 
 //Create the client player. 
 function createPlayer() {
+	player = game.add.graphics(400, 400);
+	player.radius = 20;
 
+	// set a fill and line style
+	player.beginFill(0xffd900);
+	player.lineStyle(2, 0xffd900, 1);
+	player.drawCircle(0, 0, player.radius * 2);
+	player.endFill();
+	player.anchor.setTo(0.5,0.5);
+	player.body_size = player.radius; 
+
+	// draw a shape
+	game.physics.p2.enableBody(player, true);
+	player.body.addCircle(player.body_size, 0 , 0); 
 }
 
 //This contains the preload, create, and update functions
 main.prototype = {
 	//preload function should load all assets required for the game
 	preload: function() {
-
-
+		//physics engine for the game, we're using P2
+		game.physics.startSystem(Phaser.Physics.P2JS);
+		//y gravity
+		game.physics.p2.gravity.y = 300;
 	},
 
 	create: function() {
