@@ -2,8 +2,10 @@
 var socket = io.connect();
 
 //configure canvas to screen size
-canvasWidth = window.innerWidth * window.devicePixelRatio; 
-canvasHeight = window.innerHeight * window.devicePixelRatio;
+//canvasWidth = window.innerWidth * window.devicePixelRatio; 
+//canvasHeight = window.innerHeight * window.devicePixelRatio;
+canvasHeight = 750;
+canvasWidth = 1000;
 
 //The actual phaser game
 //Create the game, first two arguments are its resolution
@@ -15,8 +17,8 @@ game = new Phaser.Game(canvasWidth, canvasHeight, Phaser.CANVAS,
 //game properties
 var gameProperties = {
 	gameElement: "gameDiv",
-	gameWidth: 1000,
-	gameHeight: 2000,
+	gameWidth: 750,
+	gameHeight: 1000,
 	inGame: false,
 };
 
@@ -36,38 +38,14 @@ function onSocketConnected() {
 
 //Create the client player. 
 function createPlayer() {
-	console.log("creating player");
-	//add graphics
-	player = game.add.graphics(0, 0)
 
-	//set fill and line style
-	player.lineStyle(2, 0x0000FF, 1);
-	player.beginFill(0xffd900);
-  player.drawRect(50, 50, 50, 50);
-  player.endFill();
-  player.anchor.setTo(0.5, 0.5);
-
-  //draw the shape
-  game.physics.p2.enableBody(player, true);
-  player.body.addRectangle(50, 50)
 }
 
-//physics for the game
 //This contains the preload, create, and update functions
 main.prototype = {
 	//preload function should load all assets required for the game
 	preload: function() {
-		/*
-		game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-		game.world.setBounds(0, 0, gameProperties.gameWidth);
-		game.physics.startSystem(Phaser.Physics.P2JS);
-		game.physics.p2.setBoundsToWorld(false, false, false,
-			false, false);
-		game.physics.p2.gravity.y = 100;
-		game.physics.p2.applyGravity = true;
-		game.physics.p2.enableBody(game.physics.p2.walls, false);
-		game.physics.p2.setImpactEvents(true);
-	*/
+
 
 	},
 
