@@ -32,6 +32,7 @@ function onSocketConnected() {
 	console.log("Connected to server");
 	createPlatforms();
 	createPlayer();
+	createArrow();
 	gameProperties.inGame = true;
 	socket.emit('newPlayer', {x: 0, y: 0, angle: 0});
 };
@@ -56,6 +57,10 @@ function createPlayer() {
 	player.body.collideWorldBounds = true;
 	
 	box.destroy();
+}
+
+function createArrow() {
+	arrow = game.add.graphics(0,0);
 }
 
 function createPlatforms() {
@@ -97,6 +102,13 @@ main.prototype = {
 	update: function() {
 		//allows collisions between the player and platforms
 		var collision = game.physics.arcade.collide(player, platforms);
+		playerMove();
+		//Adds listener to client\player.js playerMove function
+		game.input.onDown.add(playerMove, this);
+
+
+
+		
 	}
 }
 
