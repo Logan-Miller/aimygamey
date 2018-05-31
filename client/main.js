@@ -39,32 +39,42 @@ function onSocketConnected() {
 //Create the client player. 
 function createPlayer() {
 	//adding graphics at a point on the plane
-	player = game.add.graphics(500, 0);
+	box = game.add.graphics(500, 0);
 	
 	//draws the box
-	player.lineStyle(2, 0x0000FF, 1);
-	player.beginFill(0xffd900);
-	player.drawRect(-25, -25, 50, 50);
-	player.endFill();
+	box.lineStyle(2, 0x0000FF, 1);
+	box.beginFill(0xffd900);
+	box.drawRect(-25, -25, 50, 50);
+	box.endFill();
 
-	player.anchor.setTo(0.5, 0.5)
+	//create sprite from the drawn graphics
+	player = game.add.sprite(500, 0, box.generateTexture());
+	player.anchor.set(0.5);
+
+	//player.anchor.setTo(0.5, 0.5)
 	game.physics.enable(player, Phaser.Physics.ARCADE);
 	player.body.collideWorldBounds = true;
-
+	
+	box.destroy();
 }
 
 function createPlatforms() {
-	platforms = game.add.graphics(0,725);
+	box = game.add.graphics(0,1000);
 	
-	platforms.lineStyle(2, 0x0000FF, 1);
-	platforms.beginFill(0x45A81E);
-	platforms.drawRect(0, 0, 1000, 25);
-	platforms.endFill();
+	box.lineStyle(2, 0x0000FF, 1);
+	box.beginFill(0x45A81E);
+	box.drawRect(0, 0, 1000, 25);
+	box.endFill();
+
+	platforms = game.add.sprite(0, 500, box.generateTexture());
+	platforms.anchor.set(0.5);
 
 	//enable physics on the graphic, gives it the "body" property
 	game.physics.enable(platforms, Phaser.Physics.ARCADE);
 	platforms.body.immovable = true;
 	platforms.body.allowGravity = false;
+
+	box.destroy();
 }
 
 //This contains the preload, create, and update functions
