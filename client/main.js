@@ -40,7 +40,7 @@ function onSocketConnected() {
 //Create the client player. 
 function createPlayer() {
 	//adding graphics at a point on the plane
-	box = game.add.graphics(500, 0);
+	var box = game.add.graphics(500, 0);
 	
 	//draws the box
 	box.lineStyle(2, 0x0000FF, 1);
@@ -64,28 +64,30 @@ function createArrow() {
 }
 
 function createPlatforms() {
-	box = game.add.graphics(0,1000);
+	platforms = game.add.group();
+	platforms.enableBody = true;
 	
-	box.lineStyle(2, 0x0000FF, 1);
-	box.beginFill(0x45A81E);
-	box.drawRect(0, 0, 1000, 25);
-	box.endFill();
+	var ground = platforms.create(0, 725, 'block');
+	ground.scale.setTo(500, 1);
+	ground.body.immovable = true;
+	ground.body.allowGravity = false;
 
-	platforms = game.add.sprite(0, 500, box.generateTexture());
-	platforms.anchor.set(0.5);
+	var platform = platforms.create(200, 400, 'block');
+	platform.scale.setTo(4, 1);
+	platform.body.immovable = true;
+	platform.body.allowGravity = false;
 
-	//enable physics on the graphic, gives it the "body" property
-	game.physics.enable(platforms, Phaser.Physics.ARCADE);
-	platforms.body.immovable = true;
-	platforms.body.allowGravity = false;
-
-	box.destroy();
+	platform = platforms.create(600, 400, 'block');
+	platform.scale.setTo(4, 1);
+	platform.body.immovable = true;
+	platform.body.allowGravity = false;
 }
 
 //This contains the preload, create, and update functions
 main.prototype = {
 	//preload function should load all assets required for the game
 	preload: function() {
+		game.load.image('block', 'client/assets/block.png')
 		//physics engine for the game, we're using P2
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		//y gravity
