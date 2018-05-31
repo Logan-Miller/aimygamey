@@ -30,6 +30,7 @@ var main = function(game){
 //for the player to control, and then tell the server
 function onSocketConnected() {
 	console.log("Connected to server");
+	createPlatforms();
 	createPlayer();
 	gameProperties.inGame = true;
 	socket.emit('newPlayer', {x: 0, y: 0, angle: 0});
@@ -37,20 +38,31 @@ function onSocketConnected() {
 
 //Create the client player. 
 function createPlayer() {
-	player = game.add.graphics(400, 400);
-	player.radius = 20;
-
-	// set a fill and line style
+	//adding graphics at a point on the plane
+	player = game.add.graphics(500, 0);
+	
+	//draws the box
+	player.lineStyle(2, 0x0000FF, 1);
 	player.beginFill(0xffd900);
-	player.lineStyle(2, 0xffd900, 1);
-	player.drawCircle(0, 0, player.radius * 2);
+	player.drawRect(-25, -25, 50, 50);
 	player.endFill();
-	player.anchor.setTo(0.5,0.5);
-	player.body_size = player.radius; 
 
-	// draw a shape
+	player.anchor.setTo(0.5, 0.5)
+
+	//enables the debugging "ghost"
 	game.physics.p2.enableBody(player, true);
-	player.body.addCircle(player.body_size, 0 , 0); 
+}
+
+function createPlatforms() {
+	platforms = game.add.graphics(0,0);
+	
+	platforms.lineStyle(2, 0x0000FF, 1);
+	platforms.beginFill(0x45A81E);
+	platforms.drawRect(0, 725, 1000, 25);
+	platforms.endFill();
+	
+	game.physics.p2.enableBody(platforms, false);
+	platforms.body.immovable = true;
 }
 
 //This contains the preload, create, and update functions
@@ -68,6 +80,7 @@ main.prototype = {
 		socket.on("connect", onSocketConnected());
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
+
 	}
 }
 
