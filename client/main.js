@@ -48,21 +48,23 @@ function createPlayer() {
 	player.endFill();
 
 	player.anchor.setTo(0.5, 0.5)
+	game.physics.enable(player, Phaser.Physics.ARCADE);
+	player.body.collideWorldBounds = true;
 
-	//enables the debugging "ghost"
-	game.physics.p2.enableBody(player, true);
 }
 
 function createPlatforms() {
-	platforms = game.add.graphics(0,0);
+	platforms = game.add.graphics(0,725);
 	
 	platforms.lineStyle(2, 0x0000FF, 1);
 	platforms.beginFill(0x45A81E);
-	platforms.drawRect(0, 725, 1000, 25);
+	platforms.drawRect(0, 0, 1000, 25);
 	platforms.endFill();
-	
-	game.physics.p2.enableBody(platforms, false);
+
+	//enable physics on the graphic, gives it the "body" property
+	game.physics.enable(platforms, Phaser.Physics.ARCADE);
 	platforms.body.immovable = true;
+	platforms.body.allowGravity = false;
 }
 
 //This contains the preload, create, and update functions
@@ -70,9 +72,9 @@ main.prototype = {
 	//preload function should load all assets required for the game
 	preload: function() {
 		//physics engine for the game, we're using P2
-		game.physics.startSystem(Phaser.Physics.P2JS);
+		game.physics.startSystem(Phaser.Physics.ARCADE);
 		//y gravity
-		game.physics.p2.gravity.y = 300;
+		game.physics.arcade.gravity.y = 300;
 	},
 
 	create: function() {
@@ -80,7 +82,11 @@ main.prototype = {
 		socket.on("connect", onSocketConnected());
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
+	},
 
+	update: function() {
+		//allows collisions between the player and platforms
+		var collision = game.physics.arcade.collide(player, platforms);
 	}
 }
 
