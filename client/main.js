@@ -32,7 +32,6 @@ function onSocketConnected() {
 	console.log("Connected to server");
 	createPlatforms();
 	createPlayer();
-	createArrow();
 	gameProperties.inGame = true;
 	socket.emit('newPlayer', {x: 0, y: 0, angle: 0});
 };
@@ -55,12 +54,16 @@ function createPlayer() {
 	//player.anchor.setTo(0.5, 0.5)
 	game.physics.enable(player, Phaser.Physics.ARCADE);
 	player.body.collideWorldBounds = true;
+
+	//Anchor arrow as a child to the player
+	arrow = game.add.sprite(0,-20, 'arrow');
+	arrow.scale.setTo(2,2);
+	arrow.anchor.set(0.5, 1);
+	arrow.dir = -1;
+	player.addChild(arrow);
+
 	
 	box.destroy();
-}
-
-function createArrow() {
-	arrow = game.add.graphics(0,0);
 }
 
 function createPlatforms() {
@@ -87,8 +90,9 @@ function createPlatforms() {
 main.prototype = {
 	//preload function should load all assets required for the game
 	preload: function() {
-		game.load.image('block', 'client/assets/block.png')
-		//physics engine for the game, we're using P2
+		game.load.image('block', 'client/assets/block.png');
+		game.load.image('arrow', 'client/assets/arrow.png');
+		//physics engine for the game, we're using arcade physics
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		//y gravity
 		game.physics.arcade.gravity.y = 300;
