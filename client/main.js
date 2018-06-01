@@ -22,6 +22,12 @@ var gameProperties = {
 	inGame: false,
 };
 
+var PlayerState = {
+	ANGLE: 1,
+	POWER: 2,
+	BLOCKED: 3
+};
+
 //game state
 var main = function(game){
 };
@@ -59,10 +65,15 @@ function createPlayer() {
 	arrow = game.add.sprite(0,-20, 'arrow');
 	arrow.scale.setTo(2,2);
 	arrow.anchor.set(0.5, 1);
+	//Direction for arrow rotation
 	arrow.dir = -1;
-	player.addChild(arrow);
+	//Power percentage threshold for movement
+	arrow.power = 1;
+	player.addChild(arrow);	
+	//Adds the player state enum property, to determine what
+	//phase of movement the player object is in
+	player.moveState = PlayerState.ANGLE;
 
-	
 	box.destroy();
 }
 
