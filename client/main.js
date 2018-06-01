@@ -82,6 +82,7 @@ function createPlayer() {
 	//phase of movement the player object is in
 	player.moveState = PlayerState.ANGLE;
 
+
 	box.destroy();
 }
 
@@ -92,7 +93,7 @@ function createPlatforms() {
 	var ground = platforms.create(0, 725, 'block');
 	ground.scale.setTo(500, 1);
 	ground.body.immovable = true;
-	ground.body.allowGravity = false;
+	ground.body.allowGravity = false;	
 
 	var platform = platforms.create(200, 400, 'block');
 	platform.scale.setTo(4, 1);
