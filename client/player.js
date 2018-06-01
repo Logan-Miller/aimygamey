@@ -1,30 +1,45 @@
-//Functionality for player movement
-function playerMove(){
-    //Current controls to play with feel
-    var maxAngle = 90;
-    var speed = 4;
-    var maxScale = 5;
-    var scaleSpeed = 6;
-
-    var dirtest = false;
-    
-    if(arrow.angle > maxAngle || arrow.angle < maxAngle*-1){
+function chooseAngle(){
+    if(arrow.angle > gameProperties.maxAngle || arrow.angle < gameProperties.maxAngle*-1){
         //Flip arrow's direction if out of max angle
         arrow.dir *= (-1);
-    }
-    if(dirtest){
-        arrow.angle += speed*arrow.dir;
-    }
+    }            
+    arrow.angle += gameProperties.speed * arrow.dir;
+}
 
-
-   
+function choosePower(){  
     if(arrow.power > 100 || arrow.power < 5){
         arrow.dir *= (-1);
+    }    
+    arrow.scale.setTo(2,gameProperties.maxScale * (arrow.power/100));
+    arrow.power += gameProperties.scaleSpeed*arrow.dir;
+}
+
+function applyForce(){
+    player.body.velocity.y = Math.sin(Phaser.Math.degToRad(arrow.angle -90)) * gameProperties.maxForce * arrow.power;
+    player.body.velocity.x = Math.cos(Phaser.Math.degToRad(arrow.angle -90)) * gameProperties.maxForce * arrow.power;
+
+}
+//Functionality for player movement
+function playerMove(){
+    switch(player.moveState){
+        case PlayerState.ANGLE:
+            chooseAngle();
+            break;
+        case PlayerState.POWER:
+            choosePower();
+            break;
+        case PlayerState.FORCE:
+            applyForce();
+            changeState();
+            break;
+        default:
+            //console.log("Movement blocked");
     }
+}
 
-    arrow.scale.setTo(2,maxScale * (arrow.power/100));
-    arrow.power += scaleSpeed*arrow.dir;
-
-
-
+//Iterates to next state, while hanging on the blocked state
+function changeState(){
+    if(player.moveState < PlayerState.BLOCKED){
+        player.moveState++;
+    }     
 }

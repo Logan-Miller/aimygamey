@@ -20,12 +20,20 @@ var gameProperties = {
 	gameWidth: 750,
 	gameHeight: 1000,
 	inGame: false,
+	//Settings for movement speed and force
+	maxAngle: 90,
+	speed: 4,
+	maxScale: 5,
+	scaleSpeed: 6,
+	maxForce: 5,
 };
+
 
 var PlayerState = {
 	ANGLE: 1,
 	POWER: 2,
-	BLOCKED: 3
+	FORCE: 3,
+	BLOCKED: 4,
 };
 
 //game state
@@ -68,7 +76,7 @@ function createPlayer() {
 	//Direction for arrow rotation
 	arrow.dir = -1;
 	//Power percentage threshold for movement
-	arrow.power = 1;
+	arrow.power = 10;
 	player.addChild(arrow);	
 	//Adds the player state enum property, to determine what
 	//phase of movement the player object is in
@@ -121,7 +129,7 @@ main.prototype = {
 		var collision = game.physics.arcade.collide(player, platforms);
 		playerMove();
 		//Adds listener to client\player.js playerMove function
-		game.input.onDown.add(playerMove, this);
+		game.input.onDown.add(changeState, this);
 
 
 
