@@ -21,4 +21,10 @@ console.log("Server started");
 //listen for a connection from a client
 io.sockets.on('connection', function(socket){
 	console.log("User " + socket.id + " connected");
+	socket.on('disconnect', onDisconnect)
 });
+
+function onDisconnect(){
+	console.log("User " + this.id + " disconnected");
+	//TODO Cleanup
+}
