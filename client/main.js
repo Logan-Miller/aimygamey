@@ -47,7 +47,7 @@ function onSocketConnected() {
 	createPlatforms();
 	createPlayer();
 	gameProperties.inGame = true;
-	socket.emit('newPlayer', {x: 0, y: 0, angle: 0});
+	socket.emit('newPlayer', {x: 0, y: 0});
 };
 
 //Create the client player. 
@@ -86,6 +86,14 @@ function createPlayer() {
 	box.destroy();
 }
 
+function onNewEnemy(data) {
+  console.log(data.x, data.y, data.id);
+}
+
+function onEnemyMovement(data) {
+  console.log(data);
+}
+
 function createPlatforms() {
 	platforms = game.add.group();
 	platforms.enableBody = true;
@@ -121,6 +129,8 @@ main.prototype = {
 	create: function() {
 		console.log("client started");
 		socket.on("connect", onSocketConnected());
+    socket.on("newEnemy", onNewEnemy);
+    socket.on("enemyMovement", onEnemyMovement);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
 	},
@@ -131,10 +141,8 @@ main.prototype = {
 		playerMove();
 		//Adds listener to client\player.js playerMove function
 		game.input.onDown.add(changeState, this);
-
-
-
-		
+    //Tell the server we have moved
+    socket.emit("playerMovement", {x: player.x, y: player.y});
 	}
 }
 
