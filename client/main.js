@@ -50,6 +50,12 @@ function onSocketConnected() {
 	socket.emit('newPlayer', {x: 0, y: 0, angle: 0});
 };
 
+
+//We've lost connection with the server!
+function onSocketDisconnect() {
+	console.log("Lost connection with server!");
+};
+
 //Create the client player. 
 function createPlayer() {
 	//adding graphics at a point on the plane
@@ -121,6 +127,7 @@ main.prototype = {
 	create: function() {
 		console.log("client started");
 		socket.on("connect", onSocketConnected());
+		socket.on("disconnect", onSocketDisconnect);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
 	},
