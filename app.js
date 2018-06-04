@@ -30,6 +30,7 @@ var Player = function (startX, startY, playerID) {
 
 //When a new player is made, save it
 function onNewPlayer(data) {
+	console.log("here");
   var newPlayer = new Player(data.x, data.y, this.id);
   
   var currentInfo = {
@@ -41,6 +42,17 @@ function onNewPlayer(data) {
   for(i = 0; i < players.length; i++) {
     //broadcast the new player out to all the other players in the list  
     this.broadcast.emit("newEnemy", currentInfo);
+  }
+
+  //check for if there are already players,
+  //if so, send the player's who are already in the game to the new player
+  if(players.length > 0) {
+  	for(i = 0; i < players.length; i++) {
+  		currentInfo.x = players[i].x;
+  		currentInfo.y = players[i].y;
+  		currentInfo.id = players[i].id;
+  		this.emit("newEnemy", currentInfo);
+  	}
   }
 
   players.push(newPlayer);
@@ -73,12 +85,10 @@ function movement(data) {
 //listen for a connection from a client
 io.sockets.on('connection', function(socket){
 	console.log("User " + socket.id + " connected");
-
 	socket.on('disconnect', onDisconnect)
- 	 //notification for when a new player connects
-  	socket.on('newPlayer', onNewPlayer);
-  	//notification for movement by players
-  	socket.on('playerMovement', movement);
-
+ 	//notification for when a new player connects
+  socket.on('newPlayer', onNewPlayer);
+  //notification for movement by players
+  socket.on('playerMovement', movement);
 });
 

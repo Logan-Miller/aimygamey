@@ -168,8 +168,8 @@ main.prototype = {
 		console.log("client started");
 		socket.on("connect", onSocketConnected());
 		socket.on("disconnect", onSocketDisconnect);
-    	socket.on("newEnemy", onNewEnemy);
-    	socket.on("enemyMovement", onEnemyMovement);
+    socket.on("newEnemy", onNewEnemy);
+    socket.on("enemyMovement", onEnemyMovement);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
     //allows the game to continue rendering when losing focus from browser
