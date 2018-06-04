@@ -18,8 +18,10 @@ app.use('/client', express.static(__dirname + '/client'));
 server.listen(process.env.PORT || 2000);
 console.log("Server started");
 
+//list of players in game
 var players = [];
 
+//constructor for a player
 var Player = function (startX, startY, playerID) {
   this.x = startX;
   this.y = startY;
@@ -37,6 +39,7 @@ function onNewPlayer(data) {
   };
 
   for(i = 0; i < players.length; i++) {
+    //broadcast the new player out to all the other players in the list  
     this.broadcast.emit("newEnemy", currentInfo);
   }
 
@@ -61,7 +64,7 @@ function movement(data) {
   var currentInfo = {
     x: data.x,
     y: data.y,
-    id: data.id,
+    id: this.id,
   };
 
   this.broadcast.emit('enemyMovement', currentInfo);

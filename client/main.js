@@ -28,13 +28,14 @@ var gameProperties = {
 	maxForce: 5,
 };
 
-
 var PlayerState = {
 	ANGLE: 1,
 	POWER: 2,
 	FORCE: 3,
 	BLOCKED: 4,
 };
+
+var enemies = [];
 
 //game state
 var main = function(game){
@@ -88,16 +89,47 @@ function createPlayer() {
 	//phase of movement the player object is in
 	player.moveState = PlayerState.ANGLE;
 
-
 	box.destroy();
 }
 
-function onNewEnemy(data) {
-  console.log(data.x, data.y, data.id);
+//function to create a new enemy
+function createEnemy(startx, starty, id) {
+  //adding graphics at a point on the plane
+  var box = game.add.graphics(500, 0);
+  
+  //draws the box
+  box.lineStyle(2, 0x0000FF, 1);
+  box.beginFill(0xD10A0A);
+  box.drawRect(-25, -25, 50, 50);
+  box.endFill();
+
+  //create sprite from the drawn graphics
+  var enemy = game.add.sprite(startx, starty, box.generateTexture());
+  enemy.anchor.set(0.5);
+  enemy.id = id;
+  enemies.push(enemy);
+
+  box.destroy();
 }
 
+//when a new enemy's data is passed from the server, 
+//we need to create it in the game world.
+function onNewEnemy(data) {
+  //enemy position and id for testing
+  console.log(data.x, data.y, data.id);
+  console.log("New player " + data.id + " detected");
+  createEnemy(data.x, data.y, data.id);
+}
+
+//TODO, update enemy movement in the client. 
 function onEnemyMovement(data) {
-  console.log(data);
+  //Find the correct enemy in the list. Once found update its sprite's position
+  for(i = 0; i < enemies.length; i++){
+    if(enemies[i].id == data.id){
+      enemies[i].x = data.x;
+      enemies[i].y = data.y;
+    }
+  }
 }
 
 function createPlatforms() {
@@ -140,6 +172,8 @@ main.prototype = {
     	socket.on("enemyMovement", onEnemyMovement);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
+    //allows the game to continue rendering when losing focus from browser
+    game.stage.disableVisibilityChange = true;
 	},
 
 	update: function() {
