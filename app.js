@@ -30,7 +30,6 @@ var Player = function (startX, startY, playerID) {
 
 //When a new player is made, save it
 function onNewPlayer(data) {
-	console.log("here");
   var newPlayer = new Player(data.x, data.y, this.id);
   
   var currentInfo = {
@@ -56,11 +55,26 @@ function onNewPlayer(data) {
   }
 
   players.push(newPlayer);
+  //TODO
+  for(i = 0; i < players.length; i++) {
+  		console.log(players[i].id);
+  	}
 }
 
 function onDisconnect(){
 	console.log("User " + this.id + " disconnected");
 	//TODO Cleanup
+	//find the user in the list of players and remove them, then tell the client
+	for(i = 0; i < players.length; i++) {
+		//TODO
+		console.log("playsers ID " + players[i].id + " and this id " + this.id);
+		if(players[i].id === this.id) {
+			//TODO
+			console.log("telling clients who to delete");
+			this.broadcast.emit("playerDisconnect", this.id);
+			players.splice(i, 1);
+		}
+	}
 }
 
 //when movement is detected, update the player's position in the players list

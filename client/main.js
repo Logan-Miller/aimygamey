@@ -57,6 +57,21 @@ function onSocketDisconnect() {
 	console.log("Lost connection with server!");
 };
 
+//When the server notifies the client an enemy has disconnected,
+//search for it in the enemies list and stop rendering it
+function onEnemyDisconnect(data) {
+	//TODO
+	console.log(data);
+	for(i = 0; i < enemies.length; i++) {
+		if(enemies[i].id == data) {
+			//TODO
+			console.log("destroying");
+			enemies[i].destroy();
+			enemies.splice(i, 1);
+		}
+	}
+}
+
 //Create the client player. 
 function createPlayer() {
 	//adding graphics at a point on the plane
@@ -170,6 +185,7 @@ main.prototype = {
 		socket.on("disconnect", onSocketDisconnect);
     socket.on("newEnemy", onNewEnemy);
     socket.on("enemyMovement", onEnemyMovement);
+    socket.on("playerDisconnect", onEnemyDisconnect);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
     //allows the game to continue rendering when losing focus from browser
