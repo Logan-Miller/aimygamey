@@ -60,22 +60,28 @@ function onSocketConnected() {
 //We've lost connection with the server!
 function onSocketDisconnect() {
 	console.log("Lost connection with server!");
-	
+
 };
 
 //When the server notifies the client an enemy has disconnected,
 //search for it in the enemies list and stop rendering it
 function onEnemyDisconnect(data) {
 	//TODO
-	console.log(data);
+	var index;
 	for(i = 0; i < enemies.length; i++) {
 		if(enemies[i].id == data) {
 			//TODO
+			/*
 			console.log("destroying");
 			enemies[i].destroy();
 			enemies.splice(i, 1);
+			*/
+			index = i;
 		}
 	}
+	console.log("destroying");
+	enemies[index].destroy();
+	enemies.splice(index, 1);
 }
 
 //Create the client player. 
