@@ -47,34 +47,39 @@ function onNewPlayer(data) {
   //if so, send the player's who are already in the game to the new player
   if(players.length > 0) {
   	for(i = 0; i < players.length; i++) {
-  		currentInfo.x = players[i].x;
-  		currentInfo.y = players[i].y;
-  		currentInfo.id = players[i].id;
-  		this.emit("newEnemy", currentInfo);
+  		var info = {
+  			x: players[i].x,
+  			y: players[i].y,
+  			id: players[i].id,
+  		};
+  		this.emit("newEnemy", info);
   	}
   }
 
   players.push(newPlayer);
-  //TODO
   for(i = 0; i < players.length; i++) {
-  		console.log(players[i].id);
-  	}
+  	console.log(players[i].id);
+  }
 }
 
 function onDisconnect(){
 	console.log("User " + this.id + " disconnected");
-	//TODO Cleanup
 	//find the user in the list of players and remove them, then tell the client
+	var index;
 	for(i = 0; i < players.length; i++) {
-		//TODO
-		console.log("playsers ID " + players[i].id + " and this id " + this.id);
 		if(players[i].id === this.id) {
-			//TODO
-			console.log("telling clients who to delete");
-			this.broadcast.emit("playerDisconnect", this.id);
-			players.splice(i, 1);
+			//console.log("removing this player " + this.id);
+			//TODO trying a different broadcast
+			//this.broadcast.emit("playerDisconnect", this.id);
+			//console.log(players[i].id);
+			//players.splice(i, 1);
+			index = i;
 		}
 	}
+	console.log("removing this player " + this.id);
+	//TODO trying a different broadcast
+	this.broadcast.emit("playerDisconnect", this.id);
+	players.splice(index, 1);
 }
 
 //when movement is detected, update the player's position in the players list
@@ -99,7 +104,7 @@ function movement(data) {
 //listen for a connection from a client
 io.sockets.on('connection', function(socket){
 	console.log("User " + socket.id + " connected");
-	socket.on('disconnect', onDisconnect)
+	socket.on('disconnect', onDisconnect);
  	//notification for when a new player connects
   socket.on('newPlayer', onNewPlayer);
   //notification for movement by players

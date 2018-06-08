@@ -61,15 +61,21 @@ function onSocketDisconnect() {
 //search for it in the enemies list and stop rendering it
 function onEnemyDisconnect(data) {
 	//TODO
-	console.log(data);
+	var index;
 	for(i = 0; i < enemies.length; i++) {
 		if(enemies[i].id == data) {
 			//TODO
+			/*
 			console.log("destroying");
 			enemies[i].destroy();
 			enemies.splice(i, 1);
+			*/
+			index = i;
 		}
 	}
+	console.log("destroying");
+	enemies[index].destroy();
+	enemies.splice(index, 1);
 }
 
 //Create the client player. 
@@ -133,7 +139,10 @@ function onNewEnemy(data) {
   //enemy position and id for testing
   console.log(data.x, data.y, data.id);
   console.log("New player " + data.id + " detected");
+  //TODO trying changing server function
   createEnemy(data.x, data.y, data.id);
+  //createEnemy(data.playerX, data.playerY, data.playerID);
+
 }
 
 //TODO, update enemy movement in the client. 
