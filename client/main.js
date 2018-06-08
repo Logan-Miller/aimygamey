@@ -26,6 +26,7 @@ var gameProperties = {
 	maxScale: 5,
 	scaleSpeed: 6,
 	maxForce: 5,
+	name,
 };
 
 var PlayerState = {
@@ -39,6 +40,10 @@ var enemies = [];
 
 //game state
 var main = function(game){
+};
+
+//splash page (name selection) state
+var splash = function(game){
 };
 
 //When connected to the server, log it, create a new object
@@ -55,6 +60,7 @@ function onSocketConnected() {
 //We've lost connection with the server!
 function onSocketDisconnect() {
 	console.log("Lost connection with server!");
+	
 };
 
 //When the server notifies the client an enemy has disconnected,
@@ -108,10 +114,9 @@ function createPlayer() {
 }
 
 //function to create a new enemy
-function createEnemy(startx, starty, id) {
+function createEnemy(startx, starty, id, name) {
   //adding graphics at a point on the plane
   var box = game.add.graphics(500, 0);
-  
   //draws the box
   box.lineStyle(2, 0x0000FF, 1);
   box.beginFill(0xD10A0A);
@@ -120,6 +125,13 @@ function createEnemy(startx, starty, id) {
 
   //create sprite from the drawn graphics
   var enemy = game.add.sprite(startx, starty, box.generateTexture());
+
+  //create the text for the name
+  var style = { font: "16px Arial", fill: "#000000", wordWrap: true, wordWrapWidth: 70, align: "center" };
+  var text = game.add.text(0,0, name, style);
+  text.anchor.set(0.5);
+  enemy.addChild(text);
+
   enemy.anchor.set(0.5);
   enemy.id = id;
   enemies.push(enemy);
@@ -133,7 +145,7 @@ function onNewEnemy(data) {
   //enemy position and id for testing
   console.log(data.x, data.y, data.id);
   console.log("New player " + data.id + " detected");
-  createEnemy(data.x, data.y, data.id);
+  createEnemy(data.x, data.y, data.id, "hardcoded name");
 }
 
 //TODO, update enemy movement in the client. 
@@ -181,15 +193,16 @@ main.prototype = {
 
 	create: function() {
 		console.log("client started");
+		console.log("My name is: " + gameProperties.name);
 		socket.on("connect", onSocketConnected());
 		socket.on("disconnect", onSocketDisconnect);
-    socket.on("newEnemy", onNewEnemy);
-    socket.on("enemyMovement", onEnemyMovement);
-    socket.on("playerDisconnect", onEnemyDisconnect);
+    	socket.on("newEnemy", onNewEnemy);
+    	socket.on("enemyMovement", onEnemyMovement);
+    	socket.on("playerDisconnect", onEnemyDisconnect);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
-    //allows the game to continue rendering when losing focus from browser
-    game.stage.disableVisibilityChange = true;
+    	//allows the game to continue rendering when losing focus from browser
+    	game.stage.disableVisibilityChange = true;
 	},
 
 	update: function() {
@@ -203,10 +216,40 @@ main.prototype = {
 	}
 }
 
+splash.prototype = {
+	//preload function should load all assets required for the game
+	preload: function() {
+		game.load.image('splash', 'client/assets/splash.png');
+	},
+
+	create: function() {
+		game.input.onDown.add(chooseName, this);
+		logo = game.add.sprite(300,200, 'splash');
+		logo.scale.setTo(1,1);
+		logo.anchor.set(0.5);
+		var style = { font: "40px Arial", fill: "#000000", align: "center" };
+		game.add.text (300,400, 'Click anywhere to begin!', style);
+		//set background color
+		game.stage.backgroundColor = "#C62917";
+    	//allows the game to continue rendering when losing focus from browser
+    	game.stage.disableVisibilityChange = true;
+	},
+
+	update: function() {
+	}
+}
+
+function chooseName(){
+	var name = prompt("What is your name?");
+	(name === "") ? gameProperties.name = "Anonymous" : gameProperties.name = name
+	game.state.start('main');
+}
+
 var gameBootStrapper = {
 	init: function(gameContainerElementID) {
+		game.state.add('splash',splash);
 		game.state.add('main', main);
-		game.state.start('main');
+		game.state.start('splash');
 	}
 };;
 
