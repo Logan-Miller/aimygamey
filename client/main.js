@@ -26,8 +26,8 @@ var gameProperties = {
 	maxScale: 5,
 	scaleSpeed: 6,
 	maxForce: 5,
+	name,
 };
-
 
 var PlayerState = {
 	ANGLE: 1,
@@ -36,8 +36,14 @@ var PlayerState = {
 	BLOCKED: 4,
 };
 
+var enemies = [];
+
 //game state
 var main = function(game){
+};
+
+//splash page (name selection) state
+var splash = function(game){
 };
 
 //When connected to the server, log it, create a new object
@@ -54,7 +60,29 @@ function onSocketConnected() {
 //We've lost connection with the server!
 function onSocketDisconnect() {
 	console.log("Lost connection with server!");
+
 };
+
+//When the server notifies the client an enemy has disconnected,
+//search for it in the enemies list and stop rendering it
+function onEnemyDisconnect(data) {
+	//TODO
+	var index;
+	for(i = 0; i < enemies.length; i++) {
+		if(enemies[i].id == data) {
+			//TODO
+			/*
+			console.log("destroying");
+			enemies[i].destroy();
+			enemies.splice(i, 1);
+			*/
+			index = i;
+		}
+	}
+	console.log("destroying");
+	enemies[index].destroy();
+	enemies.splice(index, 1);
+}
 
 //Create the client player. 
 function createPlayer() {
@@ -88,16 +116,53 @@ function createPlayer() {
 	//phase of movement the player object is in
 	player.moveState = PlayerState.ANGLE;
 
-
 	box.destroy();
 }
 
-function onNewEnemy(data) {
-  console.log(data.x, data.y, data.id);
+//function to create a new enemy
+function createEnemy(startx, starty, id, name) {
+  //adding graphics at a point on the plane
+  var box = game.add.graphics(500, 0);
+  //draws the box
+  box.lineStyle(2, 0x0000FF, 1);
+  box.beginFill(0xD10A0A);
+  box.drawRect(-25, -25, 50, 50);
+  box.endFill();
+
+  //create sprite from the drawn graphics
+  var enemy = game.add.sprite(startx, starty, box.generateTexture());
+
+  //create the text for the name
+  var style = { font: "16px Arial", fill: "#000000", wordWrap: true, wordWrapWidth: 70, align: "center" };
+  var text = game.add.text(0,0, name, style);
+  text.anchor.set(0.5);
+  enemy.addChild(text);
+
+  enemy.anchor.set(0.5);
+  enemy.id = id;
+  enemies.push(enemy);
+
+  box.destroy();
 }
 
+//when a new enemy's data is passed from the server, 
+//we need to create it in the game world.
+function onNewEnemy(data) {
+  //enemy position and id for testing
+  console.log(data.x, data.y, data.id);
+  console.log("New player " + data.id + " detected");
+  createEnemy(data.x, data.y, data.id, "hardcoded name");
+}
+
+//TODO, update enemy movement in the client. 
 function onEnemyMovement(data) {
-  console.log(data);
+  //Find the correct enemy in the list. Once found update its sprite's position
+  for(i = 0; i < enemies.length; i++){
+    if(enemies[i].id == data.id){
+      enemies[i].x = data.x;
+      enemies[i].y = data.y;
+    }
+  }
 }
 
 function createPlatforms() {
@@ -134,12 +199,16 @@ main.prototype = {
 
 	create: function() {
 		console.log("client started");
+		console.log("My name is: " + gameProperties.name);
 		socket.on("connect", onSocketConnected());
 		socket.on("disconnect", onSocketDisconnect);
     	socket.on("newEnemy", onNewEnemy);
     	socket.on("enemyMovement", onEnemyMovement);
+    	socket.on("playerDisconnect", onEnemyDisconnect);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
+    	//allows the game to continue rendering when losing focus from browser
+    	game.stage.disableVisibilityChange = true;
 	},
 
 	update: function() {
@@ -153,10 +222,40 @@ main.prototype = {
 	}
 }
 
+splash.prototype = {
+	//preload function should load all assets required for the game
+	preload: function() {
+		game.load.image('splash', 'client/assets/splash.png');
+	},
+
+	create: function() {
+		game.input.onDown.add(chooseName, this);
+		logo = game.add.sprite(300,200, 'splash');
+		logo.scale.setTo(1,1);
+		logo.anchor.set(0.5);
+		var style = { font: "40px Arial", fill: "#000000", align: "center" };
+		game.add.text (300,400, 'Click anywhere to begin!', style);
+		//set background color
+		game.stage.backgroundColor = "#C62917";
+    	//allows the game to continue rendering when losing focus from browser
+    	game.stage.disableVisibilityChange = true;
+	},
+
+	update: function() {
+	}
+}
+
+function chooseName(){
+	var name = prompt("What is your name?");
+	(name === "") ? gameProperties.name = "Anonymous" : gameProperties.name = name
+	game.state.start('main');
+}
+
 var gameBootStrapper = {
 	init: function(gameContainerElementID) {
+		game.state.add('splash',splash);
 		game.state.add('main', main);
-		game.state.start('main');
+		game.state.start('splash');
 	}
 };;
 
