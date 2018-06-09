@@ -22,20 +22,22 @@ console.log("Server started");
 var players = [];
 
 //constructor for a player
-var Player = function (startX, startY, playerID) {
+var Player = function (startX, startY, playerID, playerName) {
   this.x = startX;
   this.y = startY;
   this.id = playerID;
+  this.name = playerName;
 }
 
 //When a new player is made, save it
 function onNewPlayer(data) {
-  var newPlayer = new Player(data.x, data.y, this.id);
+  var newPlayer = new Player(data.x, data.y, this.id, data.name);
   
   var currentInfo = {
     x: newPlayer.x,
     y: newPlayer.y,
     id: newPlayer.id,
+    name: newPlayer.name,
   };
 
   for(i = 0; i < players.length; i++) {
@@ -50,7 +52,8 @@ function onNewPlayer(data) {
   		var info = {
   			x: players[i].x,
   			y: players[i].y,
-  			id: players[i].id,
+        id: players[i].id,
+        name: players[i].name,
   		};
   		this.emit("newEnemy", info);
   	}
