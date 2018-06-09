@@ -68,16 +68,10 @@ function onDisconnect(){
 	var index;
 	for(i = 0; i < players.length; i++) {
 		if(players[i].id === this.id) {
-			//console.log("removing this player " + this.id);
-			//TODO trying a different broadcast
-			//this.broadcast.emit("playerDisconnect", this.id);
-			//console.log(players[i].id);
-			//players.splice(i, 1);
 			index = i;
 		}
 	}
 	console.log("removing this player " + this.id);
-	//TODO trying a different broadcast
 	this.broadcast.emit("playerDisconnect", this.id);
 	players.splice(index, 1);
 }

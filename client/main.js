@@ -66,20 +66,12 @@ function onSocketDisconnect() {
 //When the server notifies the client an enemy has disconnected,
 //search for it in the enemies list and stop rendering it
 function onEnemyDisconnect(data) {
-	//TODO
 	var index;
 	for(i = 0; i < enemies.length; i++) {
 		if(enemies[i].id == data) {
-			//TODO
-			/*
-			console.log("destroying");
-			enemies[i].destroy();
-			enemies.splice(i, 1);
-			*/
 			index = i;
 		}
 	}
-	console.log("destroying");
 	enemies[index].destroy();
 	enemies.splice(index, 1);
 }
@@ -96,7 +88,7 @@ function createPlayer() {
 	box.endFill();
 
 	//create sprite from the drawn graphics
-	player = game.add.sprite(500, 0, box.generateTexture());
+	player = game.add.sprite(500, 700, box.generateTexture());
 	player.anchor.set(0.5);
 
 	//player.anchor.setTo(0.5, 0.5)
@@ -154,7 +146,6 @@ function onNewEnemy(data) {
   createEnemy(data.x, data.y, data.id, "hardcoded name");
 }
 
-//TODO, update enemy movement in the client. 
 function onEnemyMovement(data) {
   //Find the correct enemy in the list. Once found update its sprite's position
   for(i = 0; i < enemies.length; i++){
@@ -174,12 +165,22 @@ function createPlatforms() {
 	ground.body.immovable = true;
 	ground.body.allowGravity = false;	
 
-	var platform = platforms.create(200, 400, 'block');
+	var platform = platforms.create(250, 600, 'block');
 	platform.scale.setTo(4, 1);
 	platform.body.immovable = true;
 	platform.body.allowGravity = false;
 
-	platform = platforms.create(600, 400, 'block');
+	platform = platforms.create(600, 600, 'block');
+	platform.scale.setTo(4, 1);
+	platform.body.immovable = true;
+	platform.body.allowGravity = false;
+
+	platform = platforms.create(100, 400, 'block');
+	platform.scale.setTo(4, 1);
+	platform.body.immovable = true;
+	platform.body.allowGravity = false;
+
+	platform = platforms.create(800, 400, 'block');
 	platform.scale.setTo(4, 1);
 	platform.body.immovable = true;
 	platform.body.allowGravity = false;
@@ -202,13 +203,13 @@ main.prototype = {
 		console.log("My name is: " + gameProperties.name);
 		socket.on("connect", onSocketConnected());
 		socket.on("disconnect", onSocketDisconnect);
-    	socket.on("newEnemy", onNewEnemy);
-    	socket.on("enemyMovement", onEnemyMovement);
-    	socket.on("playerDisconnect", onEnemyDisconnect);
+    socket.on("newEnemy", onNewEnemy);
+    socket.on("enemyMovement", onEnemyMovement);
+    socket.on("playerDisconnect", onEnemyDisconnect);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
-    	//allows the game to continue rendering when losing focus from browser
-    	game.stage.disableVisibilityChange = true;
+    //allows the game to continue rendering when losing focus from browser
+    game.stage.disableVisibilityChange = true;
 	},
 
 	update: function() {
@@ -237,8 +238,8 @@ splash.prototype = {
 		game.add.text (300,400, 'Click anywhere to begin!', style);
 		//set background color
 		game.stage.backgroundColor = "#C62917";
-    	//allows the game to continue rendering when losing focus from browser
-    	game.stage.disableVisibilityChange = true;
+    //allows the game to continue rendering when losing focus from browser
+    game.stage.disableVisibilityChange = true;
 	},
 
 	update: function() {
