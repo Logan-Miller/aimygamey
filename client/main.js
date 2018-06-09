@@ -53,7 +53,7 @@ function onSocketConnected() {
 	createPlatforms();
 	createPlayer();
 	gameProperties.inGame = true;
-	socket.emit('newPlayer', {x: 0, y: 0});
+	socket.emit('newPlayer', {x: 0, y: 0, name: gameProperties.name});
 };
 
 
@@ -80,8 +80,10 @@ function onEnemyDisconnect(data) {
 		}
 	}
 	console.log("destroying");
-	enemies[index].destroy();
-	enemies.splice(index, 1);
+	if(enemies.length > 0){
+		enemies[index].destroy();
+		enemies.splice(index, 1);
+	}
 }
 
 //Create the client player. 
@@ -151,7 +153,7 @@ function onNewEnemy(data) {
   //enemy position and id for testing
   console.log(data.x, data.y, data.id);
   console.log("New player " + data.id + " detected");
-  createEnemy(data.x, data.y, data.id, "hardcoded name");
+  createEnemy(data.x, data.y, data.id, data.name);
 }
 
 //TODO, update enemy movement in the client. 
@@ -208,15 +210,16 @@ main.prototype = {
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
     	//allows the game to continue rendering when losing focus from browser
-    	game.stage.disableVisibilityChange = true;
+		game.stage.disableVisibilityChange = true;
+		//Adds listener to client\player.js playerMove function
+		game.input.onDown.add(changeState, this);
 	},
 
 	update: function() {
 		//allows collisions between the player and platforms
 		var collision = game.physics.arcade.collide(player, platforms);
 		playerMove();
-		//Adds listener to client\player.js playerMove function
-		game.input.onDown.add(changeState, this);
+
     //Tell the server we have moved
     socket.emit("playerMovement", {x: player.x, y: player.y});
 	}
