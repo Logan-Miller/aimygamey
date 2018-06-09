@@ -79,6 +79,10 @@ function onDisconnect(){
 	players.splice(index, 1);
 }
 
+function onPlayerScore(data) {
+	this.broadcast.emit("enemyScored", data);
+}
+
 //when movement is detected, update the player's position in the players list
 //then broadcast their new position out to everyone else. 
 function movement(data) {
@@ -106,5 +110,7 @@ io.sockets.on('connection', function(socket){
   socket.on('newPlayer', onNewPlayer);
   //notification for movement by players
   socket.on('playerMovement', movement);
+  //notification for player scoring a point
+  socket.on('playerScore', onPlayerScore);
 });
 

@@ -72,16 +72,12 @@ function onEnemyDisconnect(data) {
 			index = i;
 		}
 	}
-<<<<<<< HEAD
-	enemies[index].destroy();
-	enemies.splice(index, 1);
-=======
+
 	console.log("destroying");
 	if(enemies.length > 0){
 		enemies[index].destroy();
 		enemies.splice(index, 1);
 	}
->>>>>>> 316d330eecca5e7a6e43869e7f9cb2a5e51ad40e
 }
 
 //Create the client player. 
@@ -122,7 +118,7 @@ function createPlayer() {
 //function to create a new enemy
 function createEnemy(startx, starty, id, name) {
   //adding graphics at a point on the plane
-  var box = game.add.graphics(500, 0);
+  var box = game.add.graphics(500, 600);
   //draws the box
   box.lineStyle(2, 0x0000FF, 1);
   box.beginFill(0xD10A0A);
@@ -164,6 +160,10 @@ function onEnemyMovement(data) {
   }
 }
 
+function onEnemyScore(data) {
+	console.log(data + "scored a point!");
+}
+
 function createPlatforms() {
 	platforms = game.add.group();
 	platforms.enableBody = true;
@@ -192,6 +192,11 @@ function createPlatforms() {
 	platform.scale.setTo(4, 1);
 	platform.body.immovable = true;
 	platform.body.allowGravity = false;
+
+	winningPlatform = platforms.create(450, 200, 'block');
+	winningPlatform.scale.setTo(4, 1);
+	winningPlatform.body.immovable = true;
+	winningPlatform.body.allowGravity = false;
 }
 
 //This contains the preload, create, and update functions
@@ -214,22 +219,28 @@ main.prototype = {
     socket.on("newEnemy", onNewEnemy);
     socket.on("enemyMovement", onEnemyMovement);
     socket.on("playerDisconnect", onEnemyDisconnect);
+    socket.on("enemyScored", onEnemyScore);
 		//set background color
 		game.stage.backgroundColor = "#4488AA";
-<<<<<<< HEAD
     //allows the game to continue rendering when losing focus from browser
-    game.stage.disableVisibilityChange = true;
-=======
-    	//allows the game to continue rendering when losing focus from browser
 		game.stage.disableVisibilityChange = true;
 		//Adds listener to client\player.js playerMove function
 		game.input.onDown.add(changeState, this);
->>>>>>> 316d330eecca5e7a6e43869e7f9cb2a5e51ad40e
+		won = false;
 	},
 
 	update: function() {
 		//allows collisions between the player and platforms
 		var collision = game.physics.arcade.collide(player, platforms);
+		//check for a player hitting the top platform and scoring a point
+		if(won == false){ 
+				if(winningPlatform.body.touching.up == true) {
+					console.log("You scored a point!");
+					socket.emit("playerScore", gameProperties.name);
+					player.x = 500;
+					player.y = 650;
+			}
+		}
 		playerMove();
 
     //Tell the server we have moved
